@@ -3,6 +3,8 @@ name: Mirror to Gitee & Gitcode
 on:
   push:
     branches: [main, master]
+    tags:
+      - 'v*'
   workflow_dispatch:
 
 jobs:
@@ -17,23 +19,27 @@ jobs:
           fetch-depth: 0
 
       - name: Mirror to Gitee
-        uses: pixta-dev/repository-mirroring-action@v1
-        with:
-          target_git_repo: https://gitee.com/IT_Oline/itops-agent-platform.git
-          target_git_username: ${{ secrets.GITEE_USERNAME }}
-          target_git_password: ${{ secrets.GITEE_PASSWORD }}
+        run: |
+          git remote set-url origin https://${{ secrets.GITEE_USERNAME }}:${{ secrets.GITEE_PASSWORD }}@gitee.com/IT_Oline/itops-agent-platform.git
+          git push --mirror --force
         continue-on-error: true
 
       - name: Mirror to Gitcode
-        uses: pixta-dev/repository-mirroring-action@v1
-        with:
-          target_git_repo: https://gitcode.com/gcw_IM7aAihp/itops-agent-platform.git
-          target_git_username: ${{ secrets.GITCODE_USERNAME }}
-          target_git_password: ${{ secrets.GITCODE_TOKEN }}
+        run: |
+          git remote set-url origin https://${{ secrets.GITCODE_USERNAME }}:${{ secrets.GITCODE_TOKEN }}@gitcode.com/gcw_IM7aAihp/itops-agent-platform.git
+          git push --mirror --force
         continue-on-error: true
 
-      - name: Mirror tags
+      - name: Mirror tags to Gitee
         if: startsWith(github.ref, 'refs/tags/')
         run: |
-          git push --tags https://${{ secrets.GITEE_USERNAME }}:${{ secrets.GITEE_PASSWORD }}@gitee.com/IT_Oline/itops-agent-platform.git || true
-          git push --tags https://${{ secrets.GITCODE_USERNAME }}:${{ secrets.GITCODE_TOKEN }}@gitcode.com/gcw_IM7aAihp/itops-agent-platform.git || true
+          git remote set-url origin https://${{ secrets.GITEE_USERNAME }}:${{ secrets.GITEE_PASSWORD }}@gitee.com/IT_Oline/itops-agent-platform.git
+          git push --tags --force
+        continue-on-error: true
+
+      - name: Mirror tags to Gitcode
+        if: startsWith(github.ref, 'refs/tags/')
+        run: |
+          git remote set-url origin https://${{ secrets.GITCODE_USERNAME }}:${{ secrets.GITCODE_TOKEN }}@gitcode.com/gcw_IM7aAihp/itops-agent-platform.git
+          git push --tags --force
+        continue-on-error: true
