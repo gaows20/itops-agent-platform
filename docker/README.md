@@ -22,14 +22,14 @@ ITOps Agent Platform is an enterprise-grade IT operations automation platform wh
 
 ### Backend API Server
 ```bash
-# Versioned tag (Recommended)
-docker pull registry.cn-hangzhou.aliyuncs.com/huluwa666/tsq-images-hub:IT_Onlin-ITOps-backend-v3.0.3
+# Latest tag (Always pull the newest version)
+docker pull registry.cn-hangzhou.aliyuncs.com/huluwa666/tsq-images-hub:IT_Onlin-ITOps-backend-latest
 ```
 
 ### Frontend Web UI
 ```bash
-# Versioned tag (Recommended)
-docker pull registry.cn-hangzhou.aliyuncs.com/huluwa666/tsq-images-hub:IT_Onlin-ITOps-frontend-v3.0.3
+# Latest tag (Always pull the newest version)
+docker pull registry.cn-hangzhou.aliyuncs.com/huluwa666/tsq-images-hub:IT_Onlin-ITOps-frontend-latest
 ```
 
 ### Simplified Version (Lightweight)
@@ -52,7 +52,7 @@ version: '3.8'
 
 services:
   backend:
-    image: registry.cn-hangzhou.aliyuncs.com/huluwa666/tsq-images-hub:IT_Onlin-ITOps-backend-v3.0.3
+    image: registry.cn-hangzhou.aliyuncs.com/huluwa666/tsq-images-hub:IT_Onlin-ITOps-backend-latest
     container_name: itops-backend
     ports:
       - "3001:3001"
@@ -69,7 +69,7 @@ services:
     restart: unless-stopped
 
   frontend:
-    image: registry.cn-hangzhou.aliyuncs.com/huluwa666/tsq-images-hub:IT_Onlin-ITOps-frontend-v3.0.3
+    image: registry.cn-hangzhou.aliyuncs.com/huluwa666/tsq-images-hub:IT_Onlin-ITOps-frontend-latest
     container_name: itops-frontend
     ports:
       - "8080:80"
@@ -99,7 +99,7 @@ docker run -d \
   -e JWT_SECRET=your-secret-key \
   -e DOUBAO_API_KEY=your-api-key \
   -v itops-data:/app/data \
-  registry.cn-hangzhou.aliyuncs.com/huluwa666/tsq-images-hub:IT_Onlin-ITOps-backend-v3.0.3
+  registry.cn-hangzhou.aliyuncs.com/huluwa666/tsq-images-hub:IT_Onlin-ITOps-backend-latest
 ```
 
 **Frontend:**
@@ -109,7 +109,7 @@ docker run -d \
   -p 8080:80 \
   --link itops-backend \
   -e BACKEND_URL=http://itops-backend:3001 \
-  registry.cn-hangzhou.aliyuncs.com/huluwa666/tsq-images-hub:IT_Onlin-ITOps-frontend-v3.0.3
+  registry.cn-hangzhou.aliyuncs.com/huluwa666/tsq-images-hub:IT_Onlin-ITOps-frontend-latest
 ```
 
 ## ⚙️ Configuration

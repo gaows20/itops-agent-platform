@@ -84,7 +84,7 @@ version: '3.8'
 
 services:
   backend:
-    image: registry.cn-hangzhou.aliyuncs.com/huluwa666/tsq-images-hub:IT_Onlin-ITOps-backend-v3.0.3
+    image: registry.cn-hangzhou.aliyuncs.com/huluwa666/tsq-images-hub:IT_Onlin-ITOps-backend-latest
     container_name: itops-backend
     restart: unless-stopped
     ports:
@@ -102,7 +102,7 @@ services:
       start_period: 30s
 
   frontend:
-    image: registry.cn-hangzhou.aliyuncs.com/huluwa666/tsq-images-hub:IT_Onlin-ITOps-frontend-v3.0.3
+    image: registry.cn-hangzhou.aliyuncs.com/huluwa666/tsq-images-hub:IT_Onlin-ITOps-frontend-latest
     container_name: itops-frontend
     restart: unless-stopped
     ports:
@@ -352,7 +352,7 @@ sudo ufw reload
 
 | 组件 | 版本 |
 |------|------|
-| 项目版本 | v3.0.3 |
+| 项目版本 | latest (始终最新版本) |
 | Docker | 20.10+ |
 | Docker Compose | v2.0+ |
 | Node.js (容器) | 20 |
