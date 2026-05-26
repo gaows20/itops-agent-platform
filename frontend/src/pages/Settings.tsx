@@ -215,19 +215,25 @@ export default function Settings() {
       if (!qanythingConfig.apiBase.trim()) {
         setQanythingSaveStatus('error');
         setQanythingTestMessage('API 地址不能为空');
+        setQanythingTestStatus('error');
         setTimeout(() => setQanythingSaveStatus('idle'), 3000);
+        setTimeout(() => setQanythingTestStatus('idle'), 3000);
         return;
       }
       if (!qanythingConfig.kbId.trim()) {
         setQanythingSaveStatus('error');
         setQanythingTestMessage('知识库 ID 不能为空');
+        setQanythingTestStatus('error');
         setTimeout(() => setQanythingSaveStatus('idle'), 3000);
+        setTimeout(() => setQanythingTestStatus('idle'), 3000);
         return;
       }
       if (!qanythingConfig.apiKey.trim()) {
         setQanythingSaveStatus('error');
         setQanythingTestMessage('API Key 不能为空');
+        setQanythingTestStatus('error');
         setTimeout(() => setQanythingSaveStatus('idle'), 3000);
+        setTimeout(() => setQanythingTestStatus('idle'), 3000);
         return;
       }
     }

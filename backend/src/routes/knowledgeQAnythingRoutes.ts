@@ -124,8 +124,8 @@ router.post('/config', (req: Request, res: Response) => {
     }
 
     // 如果传入的 API Key 是脱敏值（包含 **** 或 ... 模式），保留原始值
-    const isMasked = apiKey.includes('****') || apiKey.includes('...');
-    const finalApiKey = isMasked ? originalApiKey : apiKey;
+    const isMasked = apiKey && (apiKey.includes('****') || apiKey.includes('...'));
+    const finalApiKey = isMasked ? originalApiKey : (apiKey || '');
 
     const config = {
       enabled: enabled || false,

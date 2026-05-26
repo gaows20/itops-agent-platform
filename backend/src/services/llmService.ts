@@ -481,7 +481,7 @@ export async function executeAgentWithLLM(
   try {
     if (qanythingService.isEnabled()) {
       logger.info('🔍 Using QAnything for knowledge retrieval...');
-      knowledgeContext = await qanythingService.queryKnowledge(userInput, 5);
+      knowledgeContext = await qanythingService.queryKnowledge(userInput, qanythingService.getTopK());
     }
   } catch (error) {
     logger.warn('️ QAnything query failed, proceeding without knowledge context:', error);

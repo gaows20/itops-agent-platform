@@ -59,6 +59,14 @@ class QAnythingService {
   }
 
   /**
+   * 获取配置的 topK 值
+   */
+  getTopK(): number {
+    const config = this.getConfig();
+    return config?.topK || 5;
+  }
+
+  /**
    * 查询知识库
    * @param question 用户问题
    * @param topK 返回的最多相关片段数
@@ -266,9 +274,15 @@ class QAnythingService {
     }
 
     try {
+      const headers: Record<string, string> = {};
+      if (config.apiKey) {
+        headers['Authorization'] = config.apiKey;
+      }
+
       const response = await axios.get(
         `${config.apiBase}/api/health`,
         {
+          headers,
           timeout: 10000
         }
       );
