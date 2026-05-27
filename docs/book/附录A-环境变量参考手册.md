@@ -1,5 +1,25 @@
 # 附录A 环境变量参考手册
 
+
+## 作者
+
+**谭策** — 独立开发者 | AIOps 领域探索者
+
+- 🌐 项目官网：[ITOpsAgentinfo](https://www.zjzwfw.cloud/ITOpsAgentinfo)
+- 📝 博客：[zjzwfw.cloud](https://www.zjzwfw.cloud/)
+- 📧 邮箱：<huawei_network@foxmail.com>
+- 💬 微信公众号：**IT Online**
+
+<p align="left">
+  <img src="./frontend/public/wechaterweima.png" width="200" alt="IT Online 微信公众号">
+</p>
+
+## 许可证
+
+[MPL-2.0](../../LICENSE) © 谭策
+
+
+
 ## A.1 概述
 
 本手册列出 ITOps Agent Platform 项目中使用的所有环境变量，包括后端服务配置、AI 模型配置、Docker 部署配置以及可选扩展变量。所有环境变量通过 `.env` 文件（开发环境）或 `docker-compose.yml` 的 `environment` 块（生产环境）注入。
