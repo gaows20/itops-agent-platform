@@ -4,40 +4,13 @@
 
 ## [Unreleased]
 
-### 新增功能
-- **数据导入导出** — 支持 CSV/JSON 格式批量导入服务器，导出告警、审计日志、报表数据
-  - CSV 批量导入服务器（提供标准模板下载）
-  - 智能去重：hostname+name 联合去重
-  - 详细错误报告：每行错误单独返回
-  - 事务保证：全部成功或全部失败
-  - 支持导出：服务器列表、告警数据、审计日志、报表
-- **备份恢复优雅重启** — 恢复备份后自动优雅重启，确保数据一致性
-  - 关闭 HTTP/WS 服务 → 停止定时任务 → 替换数据库 → 退出进程
-- **本地开发环境** — `local-dev/` 目录提供 Docker 热重载开发环境
-  - 前端：Vite 热重载（修改代码即时刷新）
-  - 后端：tsx watch 热重载（修改代码自动重启）
-  - 数据库：Docker volume 持久化
-
-### 问题修复
-- **备份恢复功能** — 修复 `restoreBackup` 中 `db.backup()` 错误用法（原来是将当前数据库备份到restorePath，而不是从restorePath恢复）
-- **SSH 连接池泄漏** — 使用 try-finally 模式确保连接一定会被释放
-- **用户缓存无效化** — 修改用户信息后立即清除缓存，不再需要等待60秒过期
-- **WebSocket 消息大小限制** — 添加 `maxHttpBufferSize: 1MB` 防止内存耗尽
-- **数据库 synchronous 模式** — 从 NORMAL 改为 FULL，提高数据可靠性
-- **前端 Token 刷新并发** — 修复 processQueue 失败后统一处理跳转逻辑
-- **Vite 代理配置** — 支持 Docker 开发环境代理（DOCKER_MODE 环境变量）
-- **ImportExport 组件** — 修复 API 导入方式（default export）
-
-### 代码质量
-- 前后端 TypeScript 编译零错误通过
-- 新增 4 个服务文件、4 个组件文件
-- 修改 16 个现有文件
-
 ### 文档更新
-- README.md 更新核心特性、项目结构、本地开发说明
-- docs/API.md 新增数据导入导出、备份恢复 API 文档
-- docs/DEVELOPMENT.md 新增 Docker 本地开发环境说明
-- CHANGELOG.md 记录本次变更
+- 全面更新项目文档，同步最新功能和架构信息
+- README.md 更新核心特性列表、项目结构说明
+- SPEC.md 更新版本号至 v3.0.4，补充数据导入导出、备份恢复模块说明
+- 更新合规检查数量从 13 项到 14 项
+- 补充 Web SSH 终端、自动修复、根因分析、告警降噪等功能描述
+- 添加 CI/CD 自动化特性说明
 
 ---
 

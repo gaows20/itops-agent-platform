@@ -2,6 +2,8 @@
 
 企业级 IT 运维多 Agent 自动化平台 — 基于大语言模型的智能运维解决方案。
 
+[项目愿景与社区共建](docs/项目愿景与社区共建.md)     [项目入门学习文档](docs/book.md)
+
 [![CI](https://github.com/qinshihu/itops-agent-platform/actions/workflows/ci.yml/badge.svg)](https://github.com/qinshihu/itops-agent-platform/actions/workflows/ci.yml)
 [![Release](https://github.com/qinshihu/itops-agent-platform/actions/workflows/release.yml/badge.svg)](https://github.com/qinshihu/itops-agent-platform/actions/workflows/release.yml)
 [![GitHub release](https://img.shields.io/github/v/release/qinshihu/itops-agent-platform?include_prereleases&sort=semver)](https://github.com/qinshihu/itops-agent-platform/releases/latest)
@@ -37,16 +39,20 @@ graph TB
 - **多 Agent 协作** — 9 个预设运维 Agent，支持自定义创建，覆盖告警、诊断、巡检、变更等场景
 - **可视化工作流** — 拖拽式编排，支持串行/并行/条件分支，实时 WebSocket 推送执行进度
 - **Web SSH 终端** — 基于 xterm.js 的交互式远程终端，支持实时输入输出、窗口自适应、双向实时通信
-- **主机管理增强** — 多级分组树形结构、CSV 批量导入、SSH 自动信息采集（CPU/内存/磁盘/OS）
+- **主机管理增强** — 多级分组树形结构、CSV/JSON 批量导入、SSH 自动信息采集（CPU/内存/磁盘/OS）
 - **数据导入导出** — 支持 CSV/JSON 格式批量导入服务器，导出告警、审计日志、报表数据
 - **备份恢复** — 完整的数据库备份与恢复流程，支持压缩、完整性校验和恢复后自动优雅重启
-- **服务器管理** — SSH 远程连接，命令执行与历史审计，13 项合规检查
+- **自动修复** — 告警自动触发修复策略，支持自定义修复工作流和审批流程
+- **根因分析** — AI 驱动的告警根因分析，快速定位问题源头
+- **告警降噪** — 智能告警去重和抑制，减少告警风暴
+- **服务器管理** — SSH 远程连接，命令执行与历史审计，14 项合规检查
 - **告警中心** — Webhook 接收 Prometheus/Zabbix/通用告警，自动降噪与工作流触发
 - **知识库 + RAG** — 22 条预设知识条目，智能检索注入 LLM 上下文
 - **AI Copilot** — 自然语言对话式运维助手，自动感知系统状态
 - **多模型支持** — 同时支持豆包（Doubao）、OpenAI 和本地部署大模型（Ollama/LM Studio/vLLM 等 OpenAI 兼容接口），数据可完全不出域
 - **企业级安全** — AES-256-GCM 敏感数据加密、JWT 认证、速率限制、审计日志、内存泄漏防护
 - **Docker 一键部署** — 前后端容器化，5 分钟上线，支持阿里云镜像仓库和本地开发热重载
+- **CI/CD 自动化** — 完整的 GitHub Actions 流水线，自动构建、测试、发布和镜像推送
 
 ## 安全特性
 
@@ -184,19 +190,20 @@ cd frontend && npm install && npm run dev
 
 <img alt="屏幕截图 2026-05-18 144450" src="docs-assets/0-4.png" style="max-width: 100%; height: auto;" />
 
-### Web 终端
+### Web SSH 终端
 
 - 基于 xterm.js 的交互式 SSH 终端
 - 实时双向通信（WebSocket）
 - 窗口大小自适应
 - 连接状态可视化
+- 终端会话管理（30 分钟 TTL 自动清理）
 
 <img alt="image" src="docs-assets/fdsfz.png" style="max-width: 100%; height: auto;" />
 
 ### 主机管理
 
 - 多级分组树形结构，按分组筛选服务器
-- CSV 批量导入，自动验证 SSH 连通性和去重
+- CSV/JSON 批量导入，自动验证 SSH 连通性和去重
 - 一键采集主机信息（OS/CPU/内存/磁盘/IP）
 - 服务器卡片展示分组标签和硬件信息
 - 支持 CSV/JSON 格式导出服务器列表
@@ -319,17 +326,18 @@ cd frontend && npm install && npm run dev
 ├── frontend/
 │   └── src/
 │       ├── App.tsx                 # React 应用入口
-│       ├── pages/                  # 页面组件（30+ 个）
+│       ├── pages/                  # 页面组件（27 个）
 │       ├── components/             # 通用组件
 │       ├── contexts/               # React Context
 │       ├── hooks/                  # 自定义 Hooks
 │       └── lib/                    # 工具库
 ├── docker/                         # Docker 生产配置
-├── local-dev/                      # Docker 本地开发配置（热重载）
 ├── docs/                           # 技术文档
 ├── examples/                       # 测试脚本和示例
+├── .github/workflows/              # GitHub Actions CI/CD 配置
 ├── docker-compose.yml              # 生产级 Docker Compose
 ├── docker-compose.simple.yml       # 简化版 Docker Compose
+├── deploy.ps1 / deploy.sh          # 一键部署脚本
 ├── start.ps1 / start.sh            # 一键启动脚本
 ├── stop.ps1 / stop.sh              # 一键停止脚本
 └── .env.example                    # 环境变量示例
