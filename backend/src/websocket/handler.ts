@@ -9,6 +9,7 @@ import type { User } from '../types';
 interface SocketWithUser extends Socket {
   user?: User;
   isAlive?: boolean;
+  terminalSessionIds?: Set<string>;
 }
 
 const taskRooms = new Map<string, Set<string>>();
@@ -63,6 +64,7 @@ export function setupWebSocket(io: SocketIOServer) {
   io.on('connection', (socket: Socket) => {
     const user = (socket as SocketWithUser).user;
     (socket as SocketWithUser).isAlive = true;
+    (socket as SocketWithUser).terminalSessionIds = new Set();
     logger.info(`🔌 Client connected: ${socket.id} (User: ${user?.username})`);
 
     socket.on('pong', () => {
@@ -113,6 +115,8 @@ export function setupWebSocket(io: SocketIOServer) {
           return;
         }
 
+        const sock = socket as SocketWithUser;
+        sock.terminalSessionIds!.add(result.sessionId);
         socket.join(`terminal:${result.sessionId}`);
 
         const shellDataHandler = (shellData: Buffer) => {
@@ -148,6 +152,8 @@ export function setupWebSocket(io: SocketIOServer) {
     });
 
     socket.on('terminal:close', (data: { sessionId: string }) => {
+      const sock = socket as SocketWithUser;
+      sock.terminalSessionIds!.delete(data.sessionId);
       socket.leave(`terminal:${data.sessionId}`);
       socket.emit(`terminal:close-session:${data.sessionId}`);
       terminalService.closeTerminalSession(data.sessionId);
@@ -159,13 +165,14 @@ export function setupWebSocket(io: SocketIOServer) {
         sockets.delete(socket.id);
       });
       
-      socket.rooms.forEach((room) => {
-        if (room.startsWith('terminal:')) {
-          const sessionId = room.replace('terminal:', '');
-          socket.emit(`terminal:close-session:${sessionId}`);
+      const sock = socket as SocketWithUser;
+      const sessions = sock.terminalSessionIds;
+      if (sessions) {
+        sessions.forEach((sessionId) => {
           terminalService.closeTerminalSession(sessionId);
-        }
-      });
+        });
+        sock.terminalSessionIds = new Set();
+      }
 
       if (pingTimeout) {
         clearTimeout(pingTimeout);

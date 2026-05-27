@@ -1,5 +1,5 @@
-import { useEffect, useRef, useState, useCallback } from 'react';
-import { Terminal } from 'xterm';
+import { useEffect, useRef, useState } from 'react';
+import { Terminal, IDisposable } from 'xterm';
 import { FitAddon } from 'xterm-addon-fit';
 import { WebLinksAddon } from 'xterm-addon-web-links';
 import { io, Socket } from 'socket.io-client';
@@ -18,112 +18,20 @@ export default function WebTerminal({ serverId, serverName, token, onClose }: Te
   const fitAddonRef = useRef<FitAddon | null>(null);
   const socketRef = useRef<Socket | null>(null);
   const sessionIdRef = useRef<string | null>(null);
+  const onDataDisposeRef = useRef<IDisposable | null>(null);
+  const onResizeDisposeRef = useRef<IDisposable | null>(null);
   const terminalDataHandlerRef = useRef<((data: { sessionId: string; data: string }) => void) | null>(null);
   const reconnectTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const reconnectCountRef = useRef(0);
   const maxReconnectAttempts = 3;
+  const mountedRef = useRef(true);
   const [status, setStatus] = useState<'connecting' | 'connected' | 'error' | 'disconnected'>('connecting');
   const [error, setError] = useState<string>('');
 
-  const cleanup = useCallback(() => {
-    if (reconnectTimerRef.current) {
-      clearTimeout(reconnectTimerRef.current);
-      reconnectTimerRef.current = null;
-    }
-    reconnectCountRef.current = 0;
-
-    const socket = socketRef.current;
-    const sessionId = sessionIdRef.current;
-    const xterm = xtermRef.current;
-    const handler = terminalDataHandlerRef.current;
-
-    if (handler && socket) {
-      socket.removeListener('terminal:data', handler);
-      terminalDataHandlerRef.current = null;
-    }
-
-    if (socket && sessionId) {
-      socket.emit('terminal:close', { sessionId });
-      socket.disconnect();
-      socketRef.current = null;
-    }
-
-    if (xterm) {
-      xterm.dispose();
-      xtermRef.current = null;
-    }
-  }, []);
-
-  const connect = useCallback(() => {
-    if (!terminalRef.current || !xtermRef.current) return;
-
-    const socket = io(import.meta.env.VITE_API_URL || 'http://localhost:3001', {
-      auth: { token },
-      transports: ['websocket']
-    });
-
-    socketRef.current = socket;
-
-    const terminalDataHandler = (data: { sessionId: string; data: string }) => {
-      if (data.sessionId === sessionIdRef.current && xtermRef.current) {
-        xtermRef.current.write(data.data);
-      }
-    };
-
-    terminalDataHandlerRef.current = terminalDataHandler;
-    socket.on('terminal:data', terminalDataHandler);
-
-    socket.on('connect', () => {
-      const term = xtermRef.current;
-      if (!term) return;
-      const cols = term.cols;
-      const rows = term.rows;
-
-      reconnectCountRef.current = 0;
-      socket.emit('terminal:open', { serverId, cols, rows }, (result: { sessionId?: string; error?: string }) => {
-        if (result.error) {
-          setStatus('error');
-          setError(result.error || 'Failed to open terminal');
-          return;
-        }
-
-        sessionIdRef.current = result.sessionId || null;
-        setStatus('connected');
-      });
-    });
-
-    socket.on('connect_error', () => {
-      setStatus('error');
-      setError('WebSocket connection failed');
-    });
-
-    socket.on('disconnect', (reason) => {
-      if (reason === 'io server disconnect') {
-        socket.disconnect();
-        setStatus('disconnected');
-        return;
-      }
-
-      if (reconnectCountRef.current < maxReconnectAttempts) {
-        setStatus('connecting');
-        reconnectCountRef.current++;
-        reconnectTimerRef.current = setTimeout(() => {
-          socket.connect();
-        }, Math.min(1000 * Math.pow(2, reconnectCountRef.current), 5000));
-      } else {
-        setStatus('disconnected');
-        setError('Terminal connection lost');
-      }
-    });
-
-    socket.on('terminal:data', terminalDataHandler);
-    socketRef.current = socket;
-
-    return socket;
-  }, [serverId, token]);
-
   useEffect(() => {
     if (!terminalRef.current) return;
+
+    mountedRef.current = true;
 
     const term = new Terminal({
       cursorBlink: true,
@@ -166,19 +74,69 @@ export default function WebTerminal({ serverId, serverName, token, onClose }: Te
     term.open(terminalRef.current);
     fitAddon.fit();
 
-    connect();
+    const socket = io(undefined, {
+      auth: { token },
+      transports: ['websocket']
+    });
+    socketRef.current = socket;
 
-    term.onData((data) => {
-      if (socketRef.current?.connected && sessionIdRef.current) {
-        socketRef.current.emit('terminal:data', { sessionId: sessionIdRef.current, data });
+    const terminalDataHandler = (data: { sessionId: string; data: string }) => {
+      if (data.sessionId === sessionIdRef.current && xtermRef.current) {
+        xtermRef.current.write(data.data);
+      }
+    };
+    terminalDataHandlerRef.current = terminalDataHandler;
+    socket.on('terminal:data', terminalDataHandler);
+
+    socket.on('connect', () => {
+      const t = xtermRef.current;
+      if (!t) return;
+      reconnectCountRef.current = 0;
+      socket.emit('terminal:open', { serverId, cols: t.cols, rows: t.rows }, (result: { sessionId?: string; error?: string }) => {
+        if (result.error) {
+          setStatus('error');
+          setError(result.error || 'Failed to open terminal');
+          return;
+        }
+        sessionIdRef.current = result.sessionId || null;
+        setStatus('connected');
+      });
+    });
+
+    socket.on('connect_error', () => {
+      setStatus('error');
+      setError('WebSocket connection failed');
+    });
+
+    socket.on('disconnect', (reason) => {
+      if (reason === 'io server disconnect') {
+        socket.disconnect();
+        setStatus('disconnected');
+        return;
+      }
+      if (reconnectCountRef.current < maxReconnectAttempts) {
+        setStatus('connecting');
+        reconnectCountRef.current++;
+        reconnectTimerRef.current = setTimeout(() => {
+          socket.connect();
+        }, Math.min(1000 * Math.pow(2, reconnectCountRef.current), 5000));
+      } else {
+        setStatus('disconnected');
+        setError('Terminal connection lost');
       }
     });
 
-    term.onResize(({ cols, rows }) => {
-      if (socketRef.current?.connected && sessionIdRef.current) {
-        socketRef.current.emit('terminal:resize', { sessionId: sessionIdRef.current, cols, rows });
-      }
+    const onDataDispose = term.onData((data) => {
+      if (!mountedRef.current || !socketRef.current?.connected || !sessionIdRef.current) return;
+      socketRef.current.emit('terminal:data', { sessionId: sessionIdRef.current, data });
     });
+    onDataDisposeRef.current = onDataDispose;
+
+    const onResizeDispose = term.onResize(({ cols, rows }) => {
+      if (!mountedRef.current || !socketRef.current?.connected || !sessionIdRef.current) return;
+      socketRef.current.emit('terminal:resize', { sessionId: sessionIdRef.current, cols, rows });
+    });
+    onResizeDisposeRef.current = onResizeDispose;
 
     const handleResize = () => {
       fitAddon.fit();
@@ -186,16 +144,44 @@ export default function WebTerminal({ serverId, serverName, token, onClose }: Te
     window.addEventListener('resize', handleResize);
 
     return () => {
-      window.removeEventListener('resize', handleResize);
-      cleanup();
-    };
-  }, [serverId, token, cleanup, connect]);
+      mountedRef.current = false;
 
-  const handleDisconnect = () => {
-    cleanup();
-    setStatus('disconnected');
-    onClose();
-  };
+      window.removeEventListener('resize', handleResize);
+      if (reconnectTimerRef.current) {
+        clearTimeout(reconnectTimerRef.current);
+        reconnectTimerRef.current = null;
+      }
+      reconnectCountRef.current = 0;
+
+      onDataDisposeRef.current?.dispose();
+      onDataDisposeRef.current = null;
+      onResizeDisposeRef.current?.dispose();
+      onResizeDisposeRef.current = null;
+
+      const handler = terminalDataHandlerRef.current;
+      if (handler && socketRef.current) {
+        socketRef.current.off('terminal:data', handler);
+        terminalDataHandlerRef.current = null;
+      }
+
+      if (socketRef.current && sessionIdRef.current) {
+        socketRef.current.emit('terminal:close', { sessionId: sessionIdRef.current });
+      }
+
+      sessionIdRef.current = null;
+
+      if (socketRef.current) {
+        socketRef.current.removeAllListeners();
+        socketRef.current.disconnect();
+        socketRef.current = null;
+      }
+
+      if (xtermRef.current) {
+        xtermRef.current.dispose();
+        xtermRef.current = null;
+      }
+    };
+  }, [serverId, token]);
 
   return (
     <div className="flex flex-col h-full bg-gray-900">
@@ -211,7 +197,20 @@ export default function WebTerminal({ serverId, serverName, token, onClose }: Te
           <span className="text-xs text-gray-500">({status})</span>
         </div>
         <button
-          onClick={handleDisconnect}
+          onClick={() => {
+            if (socketRef.current && sessionIdRef.current) {
+              socketRef.current.emit('terminal:close', { sessionId: sessionIdRef.current });
+              socketRef.current.disconnect();
+              socketRef.current = null;
+            }
+            onDataDisposeRef.current?.dispose();
+            onResizeDisposeRef.current?.dispose();
+            if (xtermRef.current) {
+              xtermRef.current.dispose();
+              xtermRef.current = null;
+            }
+            onClose();
+          }}
           className="px-3 py-1 text-xs text-gray-400 hover:text-white bg-gray-700 hover:bg-gray-600 rounded transition-colors"
         >
           关闭终端
@@ -227,7 +226,7 @@ export default function WebTerminal({ serverId, serverName, token, onClose }: Te
             <p className="text-lg font-medium mb-2">连接失败</p>
             <p className="text-sm text-gray-500 mb-4">{error}</p>
             <button
-              onClick={handleDisconnect}
+              onClick={onClose}
               className="px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded text-sm transition-colors"
             >
               返回

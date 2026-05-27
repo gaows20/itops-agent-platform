@@ -32,10 +32,10 @@ export function ImportExport({ resourceType, onImportSuccess }: ImportExportProp
     setExporting(true);
     try {
       const endpointMap: Record<string, string> = {
-        servers: '/import-export/servers/export',
-        alerts: '/import-export/alerts/export',
-        'audit-logs': '/import-export/audit-logs/export',
-        reports: '/import-export/reports/export'
+        servers: '/api/import-export/servers/export',
+        alerts: '/api/import-export/alerts/export',
+        'audit-logs': '/api/import-export/audit-logs/export',
+        reports: '/api/import-export/reports/export'
       };
 
       const endpoint = endpointMap[resourceType];
@@ -82,7 +82,7 @@ export function ImportExport({ resourceType, onImportSuccess }: ImportExportProp
     try {
       const text = await file.text();
       
-      const response = await api.post('/import-export/servers/import', {
+      const response = await api.post('/api/import-export/servers/import', {
         csvContent: text
       });
 
@@ -121,7 +121,7 @@ export function ImportExport({ resourceType, onImportSuccess }: ImportExportProp
 
   const handleDownloadTemplate = async () => {
     try {
-      const response = await api.get('/import-export/template/servers', {
+      const response = await api.get('/api/import-export/template/servers', {
         responseType: 'blob'
       });
 
