@@ -851,4 +851,4 @@ ws.onerror = (e) => console.error('WebSocket 错误:', e);
 
 ## 许可证
 
-[MIT](../../LICENSE) © 谭策
+[MPL-2.0](../../LICENSE) © 谭策

@@ -489,7 +489,7 @@ AI Copilot: "当前有 3 个活跃告警：
 | 项目名称 | ITOps Agent Platform |
 | 当前版本 | 3.0.3 |
 | 作者 | 谭策 |
-| 许可证 | MIT（开源免费） |
+| 许可证 | MPL-2.0（弱 Copyleft 开源） |
 | GitHub | https://github.com/qinshihu/itops-agent-platform |
 | 项目官网 | https://www.zjzwfw.cloud/ITOpsAgentinfo |
 

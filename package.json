@@ -21,7 +21,7 @@
   },
   "keywords": ["itops", "agent", "automation", "devops"],
   "author": "",
-  "license": "MIT",
+  "license": "MPL-2.0",
   "devDependencies": {
     "concurrently": "^8.2.2"
   }

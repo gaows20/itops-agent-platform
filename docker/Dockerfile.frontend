@@ -35,7 +35,7 @@ LABEL maintainer="谭策 <huawei_network@foxmail.com>" \
       org.opencontainers.image.title="ITOps Agent Platform Frontend" \
       org.opencontainers.image.description="Enterprise IT Operations Multi-Agent Automation Platform - Web UI" \
       org.opencontainers.image.source="https://github.com/qinshihu/itops-agent-platform" \
-      org.opencontainers.image.licenses="MIT" \
+      org.opencontainers.image.licenses="MPL-2.0" \
       org.opencontainers.image.vendor="谭策" \
       org.opencontainers.image.url="https://www.zjzwfw.cloud/ITOpsAgentinfo"
 

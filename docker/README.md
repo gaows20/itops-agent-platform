@@ -2,7 +2,7 @@
 
 Enterprise IT Operations Multi-Agent Automation Platform powered by Large Language Models.
 
-[![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
+[![License](https://img.shields.io/badge/license-MPL--2.0-blue.svg)](../LICENSE)
 
 ## 🌐 Overview
 
@@ -196,7 +196,7 @@ docker-compose -f docker-compose.simple.yml up -d --build
 
 ## 📝 License
 
-[MIT](LICENSE) © 谭策
+[MPL-2.0](../LICENSE) © 谭策
 
 ## 👤 Author
 

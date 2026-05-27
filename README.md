@@ -7,7 +7,7 @@
 [![CI](https://github.com/qinshihu/itops-agent-platform/actions/workflows/ci.yml/badge.svg)](https://github.com/qinshihu/itops-agent-platform/actions/workflows/ci.yml)
 [![Release](https://github.com/qinshihu/itops-agent-platform/actions/workflows/release.yml/badge.svg)](https://github.com/qinshihu/itops-agent-platform/actions/workflows/release.yml)
 [![GitHub release](https://img.shields.io/github/v/release/qinshihu/itops-agent-platform?include_prereleases&sort=semver)](https://github.com/qinshihu/itops-agent-platform/releases/latest)
-[![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
+[![License](https://img.shields.io/badge/license-MPL--2.0-blue.svg)](LICENSE)
 
 🌐 **项目官网**: <https://www.zjzwfw.cloud/ITOpsAgentinfo>
 
@@ -419,4 +419,4 @@ cd frontend && npm install && npm run dev
 
 ## 许可证
 
-[MIT](./LICENSE) © 谭策
+[MPL-2.0](./LICENSE) © 谭策
