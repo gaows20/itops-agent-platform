@@ -3,6 +3,7 @@
   "version": "3.0.4",
   "homepage": "https://www.zjzwfw.cloud/ITOpsAgentinfo",
   "author": "谭策 <huawei_network@foxmail.com> (https://www.zjzwfw.cloud/)",
+  "license": "MPL-2.0",
   "private": true,
   "type": "module",
   "scripts": {

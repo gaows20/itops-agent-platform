@@ -4,6 +4,7 @@
   "description": "IT Operations Multi-Agent Automation Platform - Backend",
   "homepage": "https://www.zjzwfw.cloud/ITOpsAgentinfo",
   "author": "谭策 <huawei_network@foxmail.com> (https://www.zjzwfw.cloud/)",
+  "license": "MPL-2.0",
   "main": "dist/app.js",
   "scripts": {
     "dev": "tsx watch src/app.ts",
